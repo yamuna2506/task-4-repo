@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Notes Maker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f3f4f6;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1f2937;
+    }
+
+    .note-form {
+      max-width: 600px;
+      margin: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    input, textarea, button {
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    .notes-container {
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .note {
+      background: #ffffff;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-left: 5px solid #3b82f6;
+      border-radius: 6px;
+      position: relative;
+    }
+
+    .note h3 {
+      margin-top: 0;
+    }
+
+    .note button {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background-color: #ef4444;
+    }
+
+    @media (max-width: 600px) {
+      .note-form, .notes-container {
+        padding: 0 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>📝 Notes Maker</h1>
+
+  <div class="note-form">
+    <input type="text" id="title" placeholder="Note Title" />
+    <textarea id="content" rows="5" placeholder="Write your note..."></textarea>
+    <button onclick="saveNote()">Save Note</button>
+  </div>
+
+  <div id="notesContainer" class="notes-container"></div>
+
+  <script>
+    function loadNotes() {
+      const notes = JSON.parse(localStorage.getItem("notes")) || [];
+      const container = document.getElementById("notesContainer");
+      container.innerHTML = "";
+      notes.forEach((note, index) => {
+        const noteEl = document.createElement("div");
+        noteEl.className = "note";
+        noteEl.innerHTML = `
+          <h3>${note.title}</h3>
+          <p>${note.content}</p>
+          <button onclick="deleteNote(${index})">Delete</button>
+        `;
+        container.appendChild(noteEl);
+      });
+    }
+
+    function saveNote() {
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+
+      if (!title || !content) {
+        alert("Please fill in both title and content.");
+        return;
+      }
+
+      const notes = JSON.parse(localStorage.getItem("notes")) || [];
+      notes.push({ title, content });
+      localStorage.setItem("notes", JSON.stringify(notes));
+
+      // Clear inputs
+      document.getElementById("title").value = "";
+      document.getElementById("content").value = "";
+
+      loadNotes();
+    }
+
+    function deleteNote(index) {
+      const notes = JSON.parse(localStorage.getItem("notes")) || [];
+      notes.splice(index, 1);
+      localStorage.setItem("notes", JSON.stringify(notes));
+      loadNotes();
+    }
+
+    // Load notes on page load
+    window.onload = loadNotes;
+  </script>
+
+</body>
+</html>
